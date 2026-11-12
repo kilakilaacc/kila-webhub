@@ -68,7 +68,7 @@ const STORES=["大安門市","永康門市","信義新光A8櫃","微風南京櫃
 let t0=new Date();t0=new Date(t0.getFullYear(),t0.getMonth(),t0.getDate());
 let D={tasks:[],projects:[],events:[],fixed:[],leaves:[],stores:[],checks:[]},tab="today",who=ls("kkw")||"全部",open={},cm=new Date(t0.getFullYear(),t0.getMonth(),1),cd=key(t0),err="";
 /* ---- 資料來源：Google Sheet（Apps Script）。在本機直接開檔案時顯示範例資料 ---- */
-const API="貼上你的 Apps Script 網址（結尾是 /exec）";
+const API="https://script.google.com/macros/s/AKfycbxpWSoY7zJlQSwOzh-i5wC4TYdaVJ8CdZ7-SVVSsr_0UZm94p_OEOCcwvYFrB98g_-Q/exec";
 const GS=API.startsWith("https://");
 const DEMO={tasks:[["每日","📦 處理官網訂單","Gina","缺貨先回報"],["每日","💬 查訊息","Gina"],["每週","📊 整理本週業績","Una"]],projects:[["雙11 活動","檢查活動頁","Una","2026-11-11","卡關","","2026-11-05",""],["雙11 活動","確認庫存","Gina","2026-11-14","未開始","","2026-11-06",""],["新品上架","命名","Gina","2026-11-12","已完成","","2026-11-08",""],["新品上架","撰寫文案","Una","2026-11-16","未開始","","2026-11-10",""],["春季檔期","拍攝","Gina","2026-11-10","已完成","","2026-11-01",""]],events:[["2026-11-11","","節慶","雙11","","",""]],fixed:[["每月15日(週一~週五)","發想下月活動","大家","順延"]],leaves:[["Gina","2026-11-20","2026-11-22","特休"]],stores:[["信義新光A8櫃","週年慶","2026-11-13","2026-11-26",""],["微風南京櫃","聖誕檔期","2026-11-20","2026-12-03",""],["微風南京櫃","快閃","2026-11-18","2026-11-22",""]],checks:[]};
 const api=(fn,...a)=>GS?fetch(API+"?fn="+fn+"&a="+encodeURIComponent(JSON.stringify(a))+"&_="+Date.now()).then(r=>r.json()).then(d=>{if(d&&d.error)throw new Error(d.error);return d}):Promise.resolve(fn==="getData"?DEMO:null);
