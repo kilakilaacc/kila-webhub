@@ -64,7 +64,7 @@ const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 const esc=x=>String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;");
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}};
 const ALL=["","大家","一起","兩人","全部"],SN=["未開始","進行中","已完成","卡關"],KN=["節慶","準備","固定","休假","專案"];
-const KI=t=>t==="節慶"?0:1;
+const KI=t=>t==="準備"?1:0;
 const STORES=["大安門市","永康門市","信義新光A8櫃","微風南京櫃","桃園台茂購物中心","桃園大江國際購物中心","台中LaLaport櫃","台中中友櫃","台中新光三越櫃","高雄夢時代購物中心"];
 let t0=new Date();t0=new Date(t0.getFullYear(),t0.getMonth(),t0.getDate());
 let D={tasks:[],projects:[],events:[],fixed:[],leaves:[],stores:[],checks:[]},tab="today",who=ls("kkw")||"全部",open={},cm=new Date(t0.getFullYear(),t0.getMonth(),1),cd=key(t0),err="";
@@ -104,10 +104,10 @@ function viewToday(){
  const n=list.filter(ck).length,p=list.length?Math.round(n/list.length*100):0;
  const row=t=>`<div class="row ${ck(t)?"ok":""}" data-id="${esc(t[0]+"|"+t[1])}"><span class="box">${ck(t)?"✓":""}</span><span class="tx">${esc(t[1])}${t[3]?`<small class="rm">${esc(t[3])}</small>`:""}</span><span class="pill">${esc(t[2]||"大家")}</span></div>`;
  const dd=list.filter(t=>t[0]==="每日"),ww=list.filter(t=>t[0]!=="每日");
- const all=items(t0.getFullYear(),t0.getMonth()).filter(x=>x.k!==2&&x.k!==3&&!x.done&&mine(x.o||""));
- const soon=all.filter(x=>dn(x.e)>=0&&dn(x.e)<=3).sort((a,b)=>a.e<b.e?-1:1),late=all.filter(x=>dn(x.e)<0);
  const td=key(t0),lvN=[...new Set(D.leaves.filter(l=>l[1]<=td&&(l[2]||l[1])>=td).map(l=>l[0]==="全公司"?"全公司休息":l[0]))],lvS=D.leaves.filter(l=>l[1]>td&&dn(l[1])<=7).sort((a,b)=>a[1]<b[1]?-1:1).slice(0,3);
- return `${soon.length||late.length?`<div class="card alt" ${late.length?'data-t="proj" style="cursor:pointer"':""}><b>⏰ 快到期</b>${late.length?`<div style="color:var(--warn)">已逾期 ${late.length} 項</div>${late.slice(0,2).map(x=>`<div style="color:var(--warn)">・${esc(x.t)}（${mdw(x.e)}）</div>`).join("")}${late.length>2?`<div style="color:var(--warn)">…另 ${late.length-2} 項</div>`:""}`:""}${soon.slice(0,5).map(x=>`<div><i class="ld k${x.k}"></i>${cdn(dn(x.e))[0]}｜${esc(x.t)}</div>`).join("")}</div>`:""}
+ const lim=key(addD(t0,3)),T=D.projects.filter(p=>mine(p[2])&&p[3]&&p[3]<=lim&&(p[4]!=="已完成"||sess.has(p[0]+"|"+p[1]))).sort((a,b)=>a[3]<b[3]?-1:1),tn=T.filter(p=>p[4]!=="已完成").length;
+ const todo=`<h3 style="margin-top:6px">今天要處理・${tn}</h3>`+(T.length?T.map(p=>{const n=dn(p[3]),d=p[4]==="已完成";return `<div class="row ${d?"ok":""}" data-ps="${esc(p[0])}" data-s="${esc(p[1])}"><span class="box">${d?"✓":""}</span><span class="tx">${esc(p[1])}${p[4]==="卡關"?'<span class="tag">卡關</span>':""}${lvOn(p)?'<span class="tag g">負責人休假</span>':""}<small class="rm">${esc(p[0])}</small></span><span class="pill">${esc(p[2]||"大家")}</span><span class="cd ${d?"":n<=1?"u":"m"}">${d?"✓":n<0?"逾期 "+(-n)+" 天":n===0?"今天":n===1?"明天":"剩 "+n+" 天"}</span></div>`}).join(""):'<div class="note">沒有要處理的專案步驟 🎉</div>');
+ return `${todo}
  ${lvN.length||lvS.length?`<div class="card" style="font-size:14px">${lvN.length?"🌴 今天休假："+esc(lvN.join("、")):""}${lvS.map(l=>`<div class="fs">🌴 ${esc(l[0])} ${mdw(l[1])}${l[2]&&l[2]>l[1]?" 到 "+mdw(l[2]):""}</div>`).join("")}</div>`:""}
  <div class="prog"><b>${p}%</b><div class="bar"><i style="width:${p}%"></i></div><span>今日 ${n}/${list.length}</span></div>
  ${p===100&&list.length?'<div class="note" style="margin:0 0 8px">全部完成 ✓</div>':""}
@@ -116,23 +116,23 @@ function viewToday(){
 async function save(fn,...a){busy++;let ok=1;try{await api(fn,...a)}catch(e){ok=0}busy--;if(ok){toast(GS?"已儲存 ✓":"預覽模式：不會存到 Sheet");if(!busy)render()}else{toast("沒存到，已重新載入",1);load()}}
 function toggle(k){const i=D.checks.indexOf(k),on=i<0;on?D.checks.push(k):D.checks.splice(i,1);render();save("toggleCheck",k,on)}
 /* ---- 專案 ---- */
-let finOpen=false;
+let finOpen=false;const sess=new Set();
 function viewProj(){
- const td=key(t0),late=p=>p[4]!=="已完成"&&p[3]&&p[3]<td,P=D.projects.filter(p=>mine(p[2])),g={},md=s=>s.slice(5).replace("-","/");
+ const td=key(t0),late=p=>p[4]!=="已完成"&&p[3]&&p[3]<td,P=D.projects.filter(p=>mine(p[2])),g={},md=s=>s.slice(5).replace("-","/"),bd=(a,b)=>(a[3]||"9999")<(b[3]||"9999")?-1:1;
  P.forEach(p=>(g[p[0]]=g[p[0]]||[]).push(p));
- const info=Object.keys(g).map(n=>{const L=g[n],k=L.filter(p=>p[4]==="已完成").length,dd=k===L.length,nx=L.filter(p=>p[4]!=="已完成"&&p[3]).sort((a,b)=>a[3]<b[3]?-1:1)[0],stuck=L.some(p=>p[4]==="卡關"||late(p)),tp=L.filter(p=>p[6]&&p[3]),s=tp.length?tp.map(p=>p[6]).sort()[0]:"",e=tp.length?tp.map(p=>p[3]).sort().pop():"";
+ const mon=addD(t0,-((t0.getDay()+6)%7)),wk0=key(mon),wk1=key(addD(mon,6));
+ const info=Object.keys(g).map(n=>{const L=g[n],k=L.filter(p=>p[4]==="已完成").length,dd=k===L.length,nx=L.filter(p=>p[4]!=="已完成"&&p[3]).sort(bd)[0],stuck=L.some(p=>p[4]==="卡關"||late(p)),tp=L.filter(p=>p[6]&&p[3]),s=tp.length?tp.map(p=>p[6]).sort()[0]:"",e=tp.length?tp.map(p=>p[3]).sort().pop():"",vis=L.filter(p=>p[4]==="卡關"||(p[3]&&p[3]<=wk1&&(p[3]>=wk0||p[4]!=="已完成"))).sort(bd);
   let beh=!dd&&stuck,el=null;
   if(s&&e&&e>s){const s0=new Date(s+"T00:00:00");el=Math.min(1,Math.max(0,(t0-s0)/(new Date(e+"T00:00:00")-s0)));if(!dd&&el-k/L.length>=.2)beh=true}
-  return{n,L,k,dd,nx,stuck,s,e,el,beh}});
- const card=c=>{const{n,L,k,dd,nx,stuck,s,e,el,beh}=c,ow=[...new Set(L.map(p=>p[2]).filter(Boolean))],fold=L.length>3,o=!fold||(open[n]??(stuck||beh)),dp=Math.round(k/L.length*100);
+  return{n,L,k,dd,nx,stuck,s,e,el,beh,vis}});
+ const card=c=>{const{n,L,k,dd,nx,s,e,el,beh,vis}=c,ow=[...new Set(L.map(p=>p[2]).filter(Boolean))],o=dd||open[n],rows=o?[...L].sort(bd):vis,rest=L.length-vis.length,dp=Math.round(k/L.length*100),none=!dd&&!vis.some(p=>p[4]!=="已完成");
   const bar=el!==null?`<div class="tl"><span>${md(s)}</span><div class="tb"><i style="width:${dp}%"></i><u style="left:${Math.round(el*100)}%"></u></div><span>${md(e)}</span></div>`:`<div class="tl"><div class="tb"><i style="width:${dp}%"></i></div></div>`;
-  return `<div class="card ${dd?"fin":""}"><div class="ph" ${fold?`data-o="${esc(n)}"`:""}><b>${esc(n)}</b><span>${k}/${L.length}${fold?(o?" ▲":" ▼"):""}</span></div>${bar}<div class="nx ${beh?"lt":""}">${beh?"⚠ 落後・":""}👤 ${esc(ow.join("・")||"大家")}${nx&&!dd?"　下一步："+esc(nx[1])+"・"+mdw(nx[3]):""}</div>
-  ${o?L.map(p=>`<div class="ps ${p[4]==="已完成"?"ok":""}" data-ps="${esc(p[0])}" data-s="${esc(p[1])}"><span class="box">${p[4]==="已完成"?"✓":""}</span><span class="tx">${esc(p[1])}${p[4]==="卡關"?'<span class="tag">卡關</span>':""}${lvOn(p)?'<span class="tag g">負責人休假</span>':""}${/^https?:/.test(p[5])?` <a href="${esc(p[5])}" target="_blank" rel="noopener">🔗</a>`:""}${p[7]?`<small class="rm">${esc(p[7])}</small>`:""}</span>${ow.length>1?`<span class="pill">${esc(p[2]||"大家")}</span>`:""}<span class="du ${late(p)?"lt":""}">${p[3]?md(p[3]):""}</span></div>`).join(""):""}</div>`};
- const mon=addD(t0,-((t0.getDay()+6)%7)),wk0=key(mon),wk1=key(addD(mon,6)),wkL=P.filter(p=>p[3]&&((p[3]>=wk0&&p[3]<=wk1)||(p[3]<wk0&&p[4]!=="已完成"))).sort((a,b)=>a[3]<b[3]?-1:1),wn=wkL.filter(p=>p[4]==="已完成").length;
- const wkHtml=wkL.length?`<h3>本週要做・${wn}/${wkL.length}</h3><div class="card" style="padding:4px 14px">${wkL.map(p=>`<div class="ps ${p[4]==="已完成"?"ok":""}" data-ps="${esc(p[0])}" data-s="${esc(p[1])}"><span class="box">${p[4]==="已完成"?"✓":""}</span><span class="tx">${esc(p[1])}${p[4]==="卡關"?'<span class="tag">卡關</span>':""}${late(p)?'<span class="tag">逾期</span>':""}${lvOn(p)?'<span class="tag g">負責人休假</span>':""}<small class="rm">${esc(p[0])}</small></span><span class="pill">${esc(p[2]||"大家")}</span><span class="du ${late(p)?"lt":""}">${md(p[3])}</span></div>`).join("")}</div>`:"";
- const att=info.filter(c=>!c.dd&&(c.stuck||c.beh)),run=info.filter(c=>!c.dd&&!(c.stuck||c.beh)),fin=info.filter(c=>c.dd);
- return `${wkHtml}${att.length?`<h3>⚠ 需要注意（${att.length}）</h3>${att.map(card).join("")}`:""}${run.length?`<h3>進行中（${run.length}）</h3>${run.map(card).join("")}`:""}${!att.length&&!run.length?'<div class="note">目前沒有進行中的專案 🎉</div>':""}${fin.length?`<div class="note" data-fo="1" style="cursor:pointer">已完成 ${fin.length} 個專案 ${finOpen?"▲":"▼"}</div>${finOpen?fin.map(card).join(""):""}`:""}<div class="note">點步驟前面的圓圈打勾＝完成（上下兩處是同一筆資料，勾一邊就會同步）。橫條：深色＝完成進度，圓點＝今天</div>`}
-function tp(pn,st){const p=D.projects.find(x=>x[0]===pn&&x[1]===st);if(!p)return;p[4]=p[4]==="已完成"?"未開始":"已完成";render();save("setStatus",pn,st,p[4])}
+  const nl=none?"　本週沒事"+(nx?"・下一步："+esc(nx[1])+"・"+mdw(nx[3]):""):"";
+  return `<div class="card ${dd?"fin":""}"><div class="ph"><b>${esc(n)}</b><span>${k}/${L.length}</span></div>${bar}<div class="nx ${beh?"lt":""}">${beh?"⚠ 落後・":""}👤 ${esc(ow.join("・")||"大家")}${nl}</div>
+  ${rows.map(p=>`<div class="ps ${p[4]==="已完成"?"ok":""}" data-ps="${esc(p[0])}" data-s="${esc(p[1])}"><span class="box">${p[4]==="已完成"?"✓":""}</span><span class="tx">${esc(p[1])}${p[4]==="卡關"?'<span class="tag">卡關</span>':""}${late(p)?'<span class="tag">逾期</span>':""}${lvOn(p)?'<span class="tag g">負責人休假</span>':""}${/^https?:/.test(p[5])?` <a href="${esc(p[5])}" target="_blank" rel="noopener">🔗</a>`:""}${p[7]?`<small class="rm">${esc(p[7])}</small>`:""}</span>${ow.length>1?`<span class="pill">${esc(p[2]||"大家")}</span>`:""}<span class="du ${late(p)?"lt":""}">${p[3]?md(p[3]):""}</span></div>`).join("")}${!dd&&rest>0?`<div class="ps" data-o="${esc(n)}" style="color:var(--mu);font-size:13px;justify-content:center">${o?"收起 ▲":"其他 "+rest+" 個步驟 ▼"}</div>`:""}</div>`};
+ const act=info.filter(c=>!c.dd).sort((a,b)=>(b.stuck||b.beh)-(a.stuck||a.beh)),fin=info.filter(c=>c.dd);
+ return `${act.map(card).join("")||'<div class="note">目前沒有進行中的專案 🎉</div>'}${fin.length?`<div class="note" data-fo="1" style="cursor:pointer">已完成 ${fin.length} 個專案 ${finOpen?"▲":"▼"}</div>${finOpen?fin.map(card).join(""):""}`:""}<div class="note">每張卡片只列「本週要做」和「逾期」的步驟，點圓圈打勾＝完成。橫條：深色＝完成進度，圓點＝今天</div>`}
+function tp(pn,st){const p=D.projects.find(x=>x[0]===pn&&x[1]===st);if(!p)return;p[4]=p[4]==="已完成"?"未開始":"已完成";if(p[4]==="已完成")sess.add(p[0]+"|"+p[1]);render();save("setStatus",pn,st,p[4])}
 /* ---- 門市 ---- */
 let sw=null;
 const dd_=(a,b)=>Math.round((new Date(a+"T00:00:00")-new Date(b+"T00:00:00"))/864e5),lab=s=>{const d=new Date(s+"T00:00:00");return(d.getMonth()+1)+"/"+d.getDate()};
@@ -172,7 +172,7 @@ function render(){
 document.addEventListener("click",e=>{const t=e.target.closest("[data-t],[data-f],[data-id],[data-o],[data-ps],[data-fo],[data-sm],[data-str],[data-m],[data-c],[data-pa],[data-tdy],#rf");if(!t)return;const q=t.dataset;
  if(t.id==="rf"){load(1);return}
  if(q.t)tab=q.t;else if(q.f){who=q.f;ls("kkw",who)}else if(q.id){toggle(q.id);return}
- else if(q.ps){tp(q.ps,q.s);return}else if(q.o){open[q.o]=!(open[q.o]??document.querySelector(`[data-o="${CSS.escape(q.o)}"]`).textContent.includes("▲"))}
+ else if(q.ps){tp(q.ps,q.s);return}else if(q.o){open[q.o]=!open[q.o]}
  else if(q.m)cm=new Date(cm.getFullYear(),cm.getMonth()+ +q.m,1);else if(q.c)cd=q.c;else if(q.fo)finOpen=!finOpen;else if(q.sm)sw=addD(sw,+q.sm);else if(q.str)sw=null;else if(q.pa)pastOpen=!pastOpen;else if(q.tdy){cm=new Date(t0.getFullYear(),t0.getMonth(),1);cd=key(t0)}
  render()});
 try{const c=GS&&JSON.parse(ls("kkd")||"null");if(c){if(c.today!==key(t0))c.checks=[];D={leaves:[],stores:[],...c};render()}}catch(e){}
