@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kila kila ▫️ Web Hub</title>
+<style>
+:root{--bg:#edf3f3;--card:#fafdfd;--tx:#24383c;--mu:#7b9498;--ac:#4a848d;--acs:#dcebec;--ln:#d9e6e7;--seg:#d9e7e8;--warn:#c4786d;--c0:#EF6351;--c1:#EDAE49;--c2:#23967F;--c3:#9883E5;--c4:#4A90D9}
+@media(prefers-color-scheme:dark){:root{--bg:#121a1c;--card:#1b2528;--tx:#eaf2f3;--mu:#9bb0b4;--ac:#6fb0ba;--acs:#223a3f;--ln:#2b3b3f;--seg:#222e32;--warn:#d98b80}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 60px}
+.brand{background:var(--ac);color:#fff;border-radius:22px;padding:18px 20px;display:flex;justify-content:space-between;align-items:center}
+.brand b{font-size:22px;letter-spacing:.04em}.brand small{display:block;opacity:.85;font-size:13px;margin-top:2px}
+.circ{width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.2);color:#fff;font-size:18px;cursor:pointer}
+.seg{display:flex;background:var(--seg);border-radius:16px;padding:4px;margin:14px 0}
+.seg button{flex:1;border:0;background:none;color:var(--mu);padding:10px;border-radius:12px;font:500 15px inherit;cursor:pointer}
+.seg button.on{background:var(--card);color:var(--tx);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.card{background:var(--card);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(60,70,60,.06)}
+h3{font-size:13px;letter-spacing:.15em;color:var(--mu);font-weight:500;margin:18px 4px 8px}
+.alt{border-left:5px solid var(--warn);font-size:14px}.alt div{padding:2px 0}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}.chips button{padding:6px 16px;border-radius:99px;border:1px solid var(--ln);background:var(--card);color:var(--mu);font-size:14px;cursor:pointer}.chips button.on{background:var(--acs);color:var(--ac);border-color:var(--ac)}
+.prog{display:flex;align-items:center;gap:10px;margin:0 2px 8px}.prog b{font-size:24px;font-weight:500;min-width:62px}.bar{flex:1;height:7px;background:var(--ln);border-radius:7px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}.prog span{font-size:12px;color:var(--mu)}
+.row{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:13px 14px;margin-bottom:8px;cursor:pointer;user-select:none;box-shadow:0 1px 5px rgba(60,70,60,.05)}
+.box{flex:none;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--ln);display:grid;place-items:center;color:#fff;font-size:14px}
+.row.ok{background:var(--acs)}.row.ok .box{background:var(--ac);border-color:var(--ac)}.row.ok .tx{color:var(--mu);text-decoration:line-through}
+.tx{flex:1}.pill{font-size:12px;padding:2px 9px;border-radius:99px;background:var(--acs);color:var(--ac);white-space:nowrap}
+.tile{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.tile div{background:var(--card);border-radius:16px;padding:12px 4px;text-align:center;font-size:12px;color:var(--mu)}.tile b{display:block;font-size:28px;font-weight:500;color:var(--ac)}.tile .w b{color:var(--warn)}
+.ph{display:flex;align-items:center;gap:10px;cursor:pointer}.ph b{flex:1;font-size:16px}.ph span{font-size:12px;color:var(--mu)}.ph .bar{flex:none;width:80px}
+.nx{font-size:12px;color:var(--mu);margin:6px 0 0}.nx.lt{color:var(--warn);font-weight:600}
+.ps{display:flex;align-items:center;gap:8px;padding:9px 0;border-top:1px solid var(--ln);font-size:14px}.ps:first-of-type{margin-top:10px}.ps .tx{min-width:0}
+.chip{border:0;border-radius:99px;padding:5px 10px;font-size:12px;cursor:pointer;min-width:60px;background:var(--seg);color:var(--mu)}.chip.s1{background:var(--acs);color:var(--ac)}.chip.s2{background:var(--ac);color:#fff}.chip.s3{background:var(--warn);color:#fff}
+.du{font-size:12px;color:var(--mu);min-width:36px;text-align:right}.du.lt{color:var(--warn);font-weight:600}
+.pg{display:flex;justify-content:space-between;align-items:center;margin:4px 0 10px;font-size:20px}.pg .circ{background:var(--card);color:var(--tx);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.band,.grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center}.band{font-size:12px;color:var(--mu);padding:4px 0}
+.c{display:flex;flex-direction:column;align-items:center;padding:4px 0;min-height:50px;cursor:pointer;border-radius:10px}.c.o{opacity:.3}.c.s{background:var(--acs)}
+.c .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:14px}.c.t .n{background:var(--ac);color:#fff;font-weight:600}
+.dots{display:flex;gap:3px;margin-top:3px}.dots i,.ld{width:7px;height:7px;border-radius:50%;display:inline-block}.ld{margin-right:5px}
+.k0{background:var(--c0)}.k1{background:var(--c1)}.k2{background:var(--c2)}.k3{background:var(--c3)}.k4{background:var(--c4)}
+.leg{font-size:12px;color:var(--mu);text-align:center;margin:4px 0 12px}.leg span{margin:0 6px;white-space:nowrap}
+.ev{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--ln);font-size:14px}.ev:last-child{border:0}.ev i{margin-top:8px;flex:none}
+.fr{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:16px;padding:10px 12px;margin-bottom:8px;border-left:5px solid var(--ck);box-shadow:0 1px 5px rgba(60,70,60,.05)}
+.fd{flex:none;width:44px;text-align:center;line-height:1.2}.fd b{display:block;font-size:20px;color:var(--ck)}.fd span{font-size:11px;color:var(--mu)}
+.ft{flex:1;min-width:0;font-size:14px}.fs{font-size:12px;color:var(--mu)}
+.cd{flex:none;font-size:12px;padding:3px 9px;border-radius:99px;background:var(--seg);color:var(--mu);white-space:nowrap}.cd.m{background:#fdebc8;color:#8a5a00}.cd.u{background:var(--warn);color:#fff;font-weight:600}.fr.dn{opacity:.5}
+.rm{display:block;font-size:12px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.fin{opacity:.55}.ow{font-size:12px;color:var(--ac);margin-top:4px}
+.tl{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mu);margin-top:8px}.tb{position:relative;flex:1;height:7px;background:var(--ln);border-radius:7px}.tb i{display:block;height:100%;background:var(--ac);border-radius:7px}.tb u{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--tx);border:2px solid var(--card)}
+.chip{min-height:40px;padding:0 12px}.chips button{min-height:38px}.tile .on{outline:2px solid var(--warn)}
+.tdy{margin-left:8px;border:1px solid var(--ac);background:none;color:var(--ac);border-radius:99px;font-size:12px;padding:2px 10px;cursor:pointer}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:9px 18px;border-radius:99px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}#toast.show{opacity:1}#toast.bad{background:var(--warn);color:#fff}
+.note{font-size:12px;color:var(--mu);text-align:center;margin:14px 0}
+</style></head><body><div class="wrap">
+<div class="brand"><div><b>kila kila ▫️ Web Hub</b><small id="sub"></small></div><button class="circ" id="rf" title="重新整理">↻</button></div>
+<div class="seg"><button data-t="today" class="on">今天</button><button data-t="proj">專案</button><button data-t="cal">月曆</button></div>
+<div id="toast"></div><div id="v"><div class="note">載入中…</div></div></div>
+<script>
+const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,"0"),WD=["日","一","二","三","四","五","六"];
+const key=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const esc=x=>String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}};
+const ALL=["","大家","一起","兩人","全部"],SN=["未開始","進行中","已完成","卡關"],KN=["節慶","準備","固定","凡姐交辦","專案"];
+const KI=t=>t==="節慶"?0:/交辦/.test(t)?3:1;
+let t0=new Date();t0=new Date(t0.getFullYear(),t0.getMonth(),t0.getDate());
+let D={tasks:[],projects:[],events:[],fixed:[],checks:[]},tab="today",who=ls("kkw")||"全部",open={},cm=new Date(t0.getFullYear(),t0.getMonth(),1),cd=key(t0),err="";
+/* ---- 資料來源：Google Sheet（Apps Script）。在本機直接開檔案時顯示範例資料 ---- */
+const API="https://script.google.com/macros/s/AKfycbxpWSoY7zJlQSwOzh-i5wC4TYdaVJ8CdZ7-SVVSsr_0UZm94p_OEOCcwvYFrB98g_-Q/exec";
+const GS=API.startsWith("https://");
+const DEMO={tasks:[["每日","📦 處理官網訂單","Gina","缺貨先回報"],["每日","💬 查訊息","Gina"],["週三","🔎 找 KOL 名單","Gina"]],projects:[["雙11 活動","檢查活動頁","Una","2026-11-11","進行中","","2026-11-05","記得看新版折扣碼"],["雙11 活動","確認庫存","Gina","2026-11-12","未開始","","2026-11-06",""],["新品上架","命名","Gina","2026-11-12","已完成","","2026-11-08",""],["新品上架","撰寫文案","Una","2026-11-16","進行中","","2026-11-10",""],["新品上架","上架","Gina","2026-11-20","未開始","","2026-11-16",""],["新品上架","排序","Gina","2026-11-22","未開始","","2026-11-18",""]],events:[["2026-11-11","","節慶","雙11","","",""],["2026-11-18","2026-11-20","凡姐交辦","黑五 EDM 文案","Gina","",""]],fixed:[["每月15日","發想下月活動","大家"]],checks:[]};
+const api=(fn,...a)=>GS?fetch(API+"?fn="+fn+"&a="+encodeURIComponent(JSON.stringify(a))+"&_="+Date.now()).then(r=>r.json()).then(d=>{if(d&&d.error)throw new Error(d.error);return d}):Promise.resolve(fn==="getData"?DEMO:null);
+let busy=0,upd="",pf="",pastOpen=false;const toast=(m,bad)=>{const e=$("#toast");e.textContent=m;e.className="show"+(bad?" bad":"");clearTimeout(toast.t);toast.t=setTimeout(()=>e.className="",1800)};
+function load(){return api("getData").then(d=>{if(busy)return;D=d;err="";{const n=new Date();upd=pad(n.getHours())+":"+pad(n.getMinutes())}render()}).catch(e=>{err="讀取失敗，請按右上角 ↻ 重試";render()})}
+/* ---- 每月固定規則 ---- */
+function fxDate(r,y,m){const last=new Date(y,m+1,0);let a;r=(r||"").trim();
+ if(a=r.match(/^每月(\d+)日$/))return +a[1]<=last.getDate()?new Date(y,m,+a[1]):null;
+ if(r==="月底")return last;
+ if(a=r.match(/^月底前(\d+)天$/))return addD(last,-a[1]);
+ if(a=r.match(/^每月最後一個週([日一二三四五六])$/)){let d=new Date(last);while(d.getDay()!==WD.indexOf(a[1]))d.setDate(d.getDate()-1);return d}
+ return null}
+/* ---- 行事曆項目：活動、專案截止日、每月固定 ---- */
+function items(y,m){const L=[];
+ D.fixed.forEach(f=>{const d=fxDate(f[0],y,m);if(d)L.push({d:key(d),e:key(d),k:2,t:f[1],o:f[2]})});
+ D.events.forEach(e=>{if(!e[0])return;L.push({d:e[0],e:e[1]>e[0]?e[1]:e[0],k:KI(e[2]),t:(e[6]&&KI(e[2])===1?e[6]+"：":"")+e[3],o:e[4],done:/完成/.test(e[5])})});
+ D.projects.forEach(p=>{if(p[3])L.push({d:p[3],e:p[3],k:4,t:p[0]+"｜"+p[1],o:p[2],done:p[4]==="已完成"})});
+ return L}
+const dn=s=>Math.round((new Date(s+"T00:00:00")-t0)/864e5),mdw=s=>{const d=new Date(s+"T00:00:00");return(d.getMonth()+1)+"/"+d.getDate()+"（"+WD[d.getDay()]+"）"};
+const cdn=n=>n<0?["已過",""]:n===0?["今天","u"]:n===1?["明天","u"]:n<=3?["剩 "+n+" 天","u"]:n<=7?["剩 "+n+" 天","m"]:["剩 "+n+" 天",""];
+const mine=o=>who==="全部"||ALL.includes(o)||o===who;
+const owners=()=>[...new Set([...D.tasks.map(t=>t[2]),...D.projects.map(p=>p[2]),...D.events.map(e=>e[4])].filter(o=>o&&!ALL.includes(o)))];
+/* ---- 今天 ---- */
+const chipsHtml=()=>`<div class="chips"><span class="nx" style="margin:0;align-self:center">我是：</span>${["全部",...owners()].map(f=>`<button data-f="${esc(f)}" class="${f===who?"on":""}">${esc(f)}</button>`).join("")}</div>`;
+function viewToday(){
+ const wk="週"+WD[t0.getDay()],list=D.tasks.filter(t=>(t[0]==="每日"||t[0]===wk)&&mine(t[2])),wl=D.tasks.filter(t=>t[0]==="每週"&&mine(t[2])),wn=wl.filter(t=>D.checks.includes(t[0]+"|"+t[1])).length,ck=t=>D.checks.includes(t[0]+"|"+t[1]);
+ const n=list.filter(ck).length,p=list.length?Math.round(n/list.length*100):0;
+ const row=t=>`<div class="row ${ck(t)?"ok":""}" data-id="${esc(t[0]+"|"+t[1])}"><span class="box">${ck(t)?"✓":""}</span><span class="tx">${esc(t[1])}${t[3]?`<small class="rm">${esc(t[3])}</small>`:""}</span><span class="pill">${esc(t[2]||"大家")}</span></div>`;
+ const dd=list.filter(t=>t[0]==="每日"),ww=list.filter(t=>t[0]!=="每日");
+ const all=items(t0.getFullYear(),t0.getMonth()).filter(x=>x.k!==2&&!x.done&&mine(x.o||""));
+ const soon=all.filter(x=>dn(x.e)>=0&&dn(x.e)<=3).sort((a,b)=>a.e<b.e?-1:1),late=all.filter(x=>dn(x.e)<0);
+ const fan=all.filter(x=>x.k===3&&dn(x.e)>=0).sort((a,b)=>a.e<b.e?-1:1);
+ return `${soon.length||late.length?`<div class="card alt" ${late.length?'data-t="proj" style="cursor:pointer"':""}><b>⏰ 快到期</b>${late.length?`<div style="color:var(--warn)">已逾期 ${late.length} 項</div>${late.slice(0,2).map(x=>`<div style="color:var(--warn)">・${esc(x.t)}（${mdw(x.e)}）</div>`).join("")}${late.length>2?`<div style="color:var(--warn)">…另 ${late.length-2} 項</div>`:""}`:""}${soon.slice(0,5).map(x=>`<div><i class="ld k${x.k}"></i>${cdn(dn(x.e))[0]}｜${esc(x.t)}</div>`).join("")}</div>`:""}
+ <div class="prog"><b>${p}%</b><div class="bar"><i style="width:${p}%"></i></div><span>今日 ${n}/${list.length}</span></div>
+ ${p===100&&list.length?'<div class="note" style="margin:0 0 8px">全部完成 ✓</div>':""}
+ <h3>每日必做</h3>${dd.map(row).join("")||'<div class="note">沒有事項</div>'}${ww.length?`<h3>${wk}專屬</h3>${ww.map(row).join("")}`:""}
+ ${wl.length?`<h3>本週要完成・週一 0 點歸零　${wn}/${wl.length}</h3>${wl.map(row).join("")}`:""}
+ ${fan.length?`<h3>凡姐交辦</h3>${fan.map(x=>fr(x)).join("")}`:""}`}
+async function save(fn,...a){busy++;let ok=1;try{await api(fn,...a)}catch(e){ok=0}busy--;if(ok){toast(GS?"已儲存 ✓":"預覽模式：不會存到 Sheet");if(!busy)render()}else{toast("沒存到，已重新載入",1);load()}}
+function toggle(k){const i=D.checks.indexOf(k),on=i<0;on?D.checks.push(k):D.checks.splice(i,1);render();save("toggleCheck",k,on)}
+/* ---- 專案 ---- */
+function viewProj(){
+ const td=key(t0),late=p=>p[4]!=="已完成"&&p[3]&&p[3]<td,P=D.projects.filter(p=>mine(p[2])),g={},md=s=>s.slice(5).replace("-","/");P.forEach(p=>(g[p[0]]=g[p[0]]||[]).push(p));
+ const c=s=>P.filter(p=>p[4]===s).length,att=P.filter(p=>p[4]==="卡關"||late(p)).length,fin=L=>L.every(p=>p[4]==="已完成");
+ const cards=Object.keys(g).filter(n=>!pf||g[n].some(p=>p[4]==="卡關"||late(p))).sort((a,b)=>fin(g[a])-fin(g[b])).map(n=>{const L=g[n],k=L.filter(p=>p[4]==="已完成").length,dd=fin(L),nx=L.filter(p=>p[4]!=="已完成"&&p[3]).sort((a,b)=>a[3]<b[3]?-1:1)[0],bad=L.some(p=>p[4]==="卡關"||late(p)),fold=L.length>3,o=!fold||(open[n]??bad),ow=[...new Set(L.map(p=>p[2]).filter(Boolean))].join("・");
+  const tp=L.filter(p=>p[6]&&p[3]),s=tp.length?tp.map(p=>p[6]).sort()[0]:"",e=tp.length?tp.map(p=>p[3]).sort().pop():"";let beh=!dd&&L.some(late),tl="";
+  if(s&&e&&e>s){const s0=new Date(s+"T00:00:00"),el=Math.min(1,Math.max(0,(t0-s0)/(new Date(e+"T00:00:00")-s0))),dp=k/L.length;if(!dd&&el-dp>=.2)beh=true;
+   tl=`<div class="tl"><span>${md(s)}</span><div class="tb"><i style="width:${Math.round(dp*100)}%"></i><u style="left:${Math.round(el*100)}%"></u></div><span>${md(e)}</span></div>`}
+  return `<div class="card ${dd?"fin":""}"><div class="ph" ${fold?`data-o="${esc(n)}"`:""}><b>${esc(n)}</b><div class="bar"><i style="width:${Math.round(k/L.length*100)}%"></i></div><span>${k}/${L.length}${fold?(o?" ▲":" ▼"):""}</span></div>
+  <div class="ow">👤 ${esc(ow||"大家")}</div>${tl}${(()=>{const nl=nx?`下一步：${esc(nx[1])}・${mdw(nx[3])}`:(dd?"全部完成 ✓":"");return beh||nl?`<div class="nx ${beh||(nx&&late(nx))?"lt":""}">${beh?"⚠ 落後"+(nl?"・":""):""}${nl}</div>`:""})()}
+  ${o?L.map(p=>`<div class="ps"><button class="chip s${Math.max(0,SN.indexOf(p[4]))}" data-p="${esc(p[0])}" data-s="${esc(p[1])}">${esc(p[4]||"未開始")}</button><span class="tx">${esc(p[1])}${/^https?:/.test(p[5])?` <a href="${esc(p[5])}" target="_blank" rel="noopener">🔗</a>`:""}${p[7]?`<small class="rm">${esc(p[7])}</small>`:""}</span><span class="pill">${esc(p[2]||"大家")}</span><span class="du ${late(p)?"lt":""}">${p[3]?md(p[3]):""}</span></div>`).join(""):""}</div>`}).join("");
+ return `<div class="tile"><div><b>${c("進行中")}</b>進行中</div><div class="${att?"w":""} ${pf?"on":""}" data-pf="1" style="cursor:pointer"><b>${att}</b>卡關／逾期</div><div><b>${c("已完成")}</b>已完成</div></div>${pf?'<div class="note" style="margin:0 0 8px">只顯示卡關／逾期的專案，再點一次紅框取消</div>':""}${cards||`<div class="note">${pf?"沒有卡關或逾期的專案 🎉":"沒有專案"}</div>`}<div class="note">橫條：深色＝完成進度，圓點＝今天。步驟超過 3 個的專案可點標題展開。點狀態切換：未開始 → 進行中 → 已完成 → 卡關</div>`}
+function cyc(pn,st){const p=D.projects.find(x=>x[0]===pn&&x[1]===st);if(!p)return;p[4]=SN[(Math.max(0,SN.indexOf(p[4]))+1)%4];render();save("setStatus",pn,st,p[4])}
+/* ---- 月曆 ---- */
+function fr(x){const s=dn(x.d),c=s>0&&x.e>x.d?[s+" 天後開始",""]:cdn(dn(x.e)),d=new Date(x.d+"T00:00:00");
+ return `<div class="fr ${x.done?"dn":""}" style="--ck:var(--c${x.k})"><div class="fd"><b>${d.getDate()}</b><span>週${WD[d.getDay()]}</span></div><div class="ft"><div>${esc(x.t)}</div><div class="fs">📅 ${x.e>x.d?mdw(x.d)+" 到 "+mdw(x.e):mdw(x.d)}${x.o?"｜"+esc(x.o):""}</div></div><span class="cd ${x.done?"":c[1]}">${x.done?"✓ 完成":c[0]}</span></div>`}
+function viewCal(){
+ const y=cm.getFullYear(),m=cm.getMonth(),L=items(y,m).filter(x=>mine(x.o||"")),by={};
+ L.forEach(e=>{for(let d=new Date(e.d+"T00:00:00"),i=0;key(d)<=e.e&&i<60;d=addD(d,1),i++)(by[key(d)]=by[key(d)]||[]).push(e)});
+ const st=addD(new Date(y,m,1),-new Date(y,m,1).getDay());let h="";
+ for(let i=0;i<42;i++){const d=addD(st,i),k=key(d);if(i>=35&&d.getMonth()!==m)break;
+  h+=`<div class="c ${d.getMonth()!==m?"o":""} ${k===key(t0)?"t":""} ${k===cd?"s":""}" data-c="${k}"><div class="n">${d.getDate()}</div><div class="dots">${[...new Set((by[k]||[]).map(e=>e.k))].map(x=>`<i class="k${x}"></i>`).join("")}</div></div>`}
+ const day=(by[cd]||[]).sort((a,b)=>a.k-b.k),a=key(new Date(y,m,1)),z=key(new Date(y,m+1,0)),hl=L.filter(x=>x.k!==2&&x.d<=z&&x.e>=a).sort((a,b)=>a.d<b.d?-1:1);
+ const isP=x=>x.done||dn(x.e)<0,act=hl.filter(x=>!isP(x)),past=hl.filter(isP),off=key(new Date(y,m,1))!==key(new Date(t0.getFullYear(),t0.getMonth(),1))||cd!==key(t0);
+ return `<div class="pg"><button class="circ" data-m="-1">‹</button><span>${y} · ${m+1} 月${off?'<button class="tdy" data-tdy="1">今天</button>':""}</span><button class="circ" data-m="1">›</button></div>
+ <div class="card" style="padding:8px"><div class="band">${WD.map(x=>`<div>${x}</div>`).join("")}</div><div class="grid">${h}</div></div>
+ <div class="leg">${KN.map((n,i)=>`<span><i class="ld k${i}"></i>${n}</span>`).join("")}</div>
+ <div class="card"><b style="font-size:13px;color:var(--ac)">${mdw(cd)}</b>${day.length?day.map(e=>`<div class="ev"><i class="ld k${e.k}"></i>${esc(e.t)}</div>`).join(""):'<div class="note" style="margin:6px 0">這天沒有事項</div>'}</div>
+ <h3>本月重點・截止日</h3>${act.map(fr).join("")||`<div class="note">${past.length?"本月沒有待辦的重點事項 🎉":"本月沒有重點事項 🎉"}</div>`}${past.length?`<div class="note" data-pa="1" style="cursor:pointer">已過／已完成 ${past.length} 項 ${pastOpen?"▲":"▼"}</div>${pastOpen?past.map(fr).join(""):""}`:""}`}
+/* ---- 畫面 ---- */
+function render(){
+ $("#sub").textContent=t0.getFullYear()+"/"+(t0.getMonth()+1)+"/"+t0.getDate()+"　週"+WD[t0.getDay()];
+ document.querySelectorAll("[data-t]").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
+ $("#v").innerHTML=(err?`<div class="card alt">${err}</div>`:"")+chipsHtml()+(tab==="today"?viewToday():tab==="proj"?viewProj():viewCal())+`<div class="note">${GS?"最後更新 "+upd+"・每分鐘自動更新":"預覽模式（範例資料）"}</div>`}
+document.addEventListener("click",e=>{const t=e.target.closest("[data-t],[data-f],[data-id],[data-o],[data-p],[data-m],[data-c],[data-pf],[data-pa],[data-tdy],#rf");if(!t)return;const q=t.dataset;
+ if(t.id==="rf"){load();return}
+ if(q.t)tab=q.t;else if(q.f){who=q.f;ls("kkw",who)}else if(q.id){toggle(q.id);return}
+ else if(q.p){cyc(q.p,q.s);return}else if(q.o){open[q.o]=!(open[q.o]??document.querySelector(`[data-o="${CSS.escape(q.o)}"]`).textContent.includes("▲"))}
+ else if(q.m)cm=new Date(cm.getFullYear(),cm.getMonth()+ +q.m,1);else if(q.c)cd=q.c;else if(q.pf)pf=pf?"":"bad";else if(q.pa)pastOpen=!pastOpen;else if(q.tdy){cm=new Date(t0.getFullYear(),t0.getMonth(),1);cd=key(t0)}
+ render()});
+load();setInterval(()=>{if(key(new Date())!==key(t0)){location.reload();return}load()},60000);
+</script></body></html>
