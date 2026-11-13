@@ -52,30 +52,43 @@ h3{font-size:13px;letter-spacing:.15em;color:var(--mu);font-weight:500;margin:18
 .sd{display:grid;grid-template-columns:repeat(14,1fr);font-size:10px;text-align:center;color:var(--mu);margin:6px 0 2px}.sd .t{color:#fff;background:var(--ac);border-radius:6px}.sd .w{opacity:.5}
 .sn{font-size:13px;font-weight:600;margin:12px 2px 4px}.sk{position:relative;background:var(--card);border-radius:10px;box-shadow:0 1px 4px rgba(60,70,60,.06);overflow:hidden}
 .sb{position:absolute;height:22px;border-radius:6px;color:#fff;font-size:11px;line-height:22px;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.td{position:absolute;top:0;bottom:0;width:2px;background:var(--ac);opacity:.45}
+.dpl{position:relative;flex:none;font-size:12px;color:var(--ac);border:1px solid var(--ac);border-radius:99px;padding:2px 9px;white-space:nowrap;cursor:pointer}.dpl input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+button.tag{border:0;cursor:pointer;font:inherit;font-size:11px}.fr.dn .ft>div:first-child{text-decoration:line-through}.fr .box{margin-right:-2px}
 .note{font-size:12px;color:var(--mu);text-align:center;margin:14px 0}
+.wrap.w{max-width:1180px}
+.cal2,.wk{display:flex;gap:16px;align-items:flex-start}.cl,.wc{flex:1;min-width:0}.tp{width:380px;flex:none}.wl{width:300px;flex:none}
+@media(max-width:860px){.cal2,.wk{display:block}.tp,.wl{width:auto}}
+.c{position:relative}.bd{position:absolute;left:3px;right:3px;bottom:2px;height:5px;background:rgba(35,150,127,.35)}
+.lb{display:inline-block;width:16px;height:6px;background:rgba(35,150,127,.35);margin-right:5px}
+.th{font-size:17px;font-weight:700;margin:0 2px 2px}
+.gh{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;margin:14px 2px 4px}.gh i{width:9px;height:9px;border-radius:50%;display:block}.gh u{text-decoration:none;font-weight:400;color:var(--mu)}.gh.tg2{cursor:pointer}
+.tr{display:flex;align-items:center;gap:10px;padding:9px 4px;border-top:1px solid var(--ln);font-size:14px;cursor:pointer;user-select:none}
+.tt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tt small{color:var(--mu);margin-left:6px;font-size:12px}
+.tr.ok .tt{text-decoration:line-through;color:var(--mu)}.tr.ok .box{background:var(--ac);border-color:var(--ac)}
+.cd.b{background:var(--acs);color:var(--ac)}
 </style></head><body><div class="wrap">
 <div class="brand"><div><b>kila kila ▫️ Web Hub</b><small id="sub"></small></div><button class="circ" id="rf" title="重新整理">↻</button></div>
-<div class="seg"><button data-t="today" class="on">今天</button><button data-t="proj">專案</button><button data-t="cal">月曆</button><button data-t="store">門市</button></div>
+<div class="seg"><button data-t="today" class="on">今天</button><button data-t="week">本週</button><button data-t="cal">月曆</button><button data-t="store">門市</button></div>
 <div id="toast"></div><div id="v"><div class="note">載入中…</div></div></div>
 <script>
 const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,"0"),WD=["日","一","二","三","四","五","六"];
 const key=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
 const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
-const esc=x=>String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const esc=x=>String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}};
 const ALL=["","大家","一起","兩人","全部"],SN=["未開始","進行中","已完成","卡關"],KN=["節慶","準備","固定","休假","專案"];
 const KI=t=>t==="準備"?1:0;
 const STORES=["大安門市","永康門市","信義新光A8櫃","微風南京櫃","桃園台茂購物中心","桃園大江國際購物中心","台中LaLaport櫃","台中中友櫃","台中新光三越櫃","高雄夢時代購物中心"];
 let t0=new Date();t0=new Date(t0.getFullYear(),t0.getMonth(),t0.getDate());
-let D={tasks:[],projects:[],events:[],fixed:[],leaves:[],stores:[],checks:[]},tab="today",who=ls("kkw")||"全部",open={},cm=new Date(t0.getFullYear(),t0.getMonth(),1),cd=key(t0),err="";
+let D={tasks:[],projects:[],events:[],fixed:[],leaves:[],stores:[],todos:[],log:[],mrec:[],checks:[]},tab="today",who=ls("kkw")||"全部",open={},cm=new Date(t0.getFullYear(),t0.getMonth(),1),cd=key(t0),err="";
 /* ---- 資料來源：Google Sheet（Apps Script）。在本機直接開檔案時顯示範例資料 ---- */
-const API="https://script.google.com/macros/s/AKfycbxpWSoY7zJlQSwOzh-i5wC4TYdaVJ8CdZ7-SVVSsr_0UZm94p_OEOCcwvYFrB98g_-Q/exec";
+const API="貼上你的 Apps Script 網址（結尾是 /exec）";
 const GS=API.startsWith("https://");
-const DEMO={tasks:[["每日","📦 處理官網訂單","Gina","缺貨先回報"],["每日","💬 查訊息","Gina"],["每週","📊 整理本週業績","Una"]],projects:[["雙11 活動","檢查活動頁","Una","2026-11-11","卡關","","2026-11-05",""],["雙11 活動","確認庫存","Gina","2026-11-14","未開始","","2026-11-06",""],["新品上架","命名","Gina","2026-11-12","已完成","","2026-11-08",""],["新品上架","撰寫文案","Una","2026-11-16","未開始","","2026-11-10",""],["春季檔期","拍攝","Gina","2026-11-10","已完成","","2026-11-01",""]],events:[["2026-11-11","","節慶","雙11","","",""]],fixed:[["每月15日(週一~週五)","發想下月活動","大家","順延"]],leaves:[["Gina","2026-11-20","2026-11-22","特休"]],stores:[["信義新光A8櫃","週年慶","2026-11-13","2026-11-26",""],["微風南京櫃","聖誕檔期","2026-11-20","2026-12-03",""],["微風南京櫃","快閃","2026-11-18","2026-11-22",""]],checks:[]};
+const DEMO={todos:[["處理官網訂單","Gina","每日","","","缺貨先回報",""],["查訊息","Gina","每日","","","",""],["發想文案","Gina","週四","","","",""],["整理本週業績","Una","每週","","","",""],["檢查活動頁","Una","單次","2026-11-11","雙11 活動","","卡關"],["確認庫存","Gina","單次","2026-11-14","雙11 活動","",""],["命名＋量尺寸","Gina","單次","2026-11-12","新品上架","","已完成"],["撰寫文案","Una","單次","2026-11-16","新品上架","",""],["上架","Gina","單次","2026-11-20","新品上架","",""],["寄樣品給 A 小姐","Gina","單次","2026-11-13","","",""],["發想聖誕文案","Gina","單次","2026-11-20","聖誕檔期","","","2026-11-16"],["整理客戶名單","Una","單次","","","","",""]],events:[["2026-11-11","","節慶","雙11","","",""]],fixed:[["每月15日(週一~週五)","發想下月活動","大家","順延"],["月底","月底覆盤","大家",""]],mrec:[["2026-11","月底覆盤","2026-11-27",""]],leaves:[["Gina","2026-11-20","2026-11-22","特休"]],stores:[["信義新光A8櫃","週年慶","2026-11-13","2026-11-26",""],["微風南京櫃","聖誕檔期","2026-11-20","2026-12-03",""],["微風南京櫃","快閃","2026-11-18","2026-11-22",""]],log:[],checks:[]};
 const api=(fn,...a)=>GS?fetch(API+"?fn="+fn+"&a="+encodeURIComponent(JSON.stringify(a))+"&_="+Date.now()).then(r=>r.json()).then(d=>{if(d&&d.error)throw new Error(d.error);return d}):Promise.resolve(fn==="getData"?DEMO:null);
-let busy=0,upd="",pf="",pastOpen=false;const toast=(m,bad)=>{const e=$("#toast");e.textContent=m;e.className="show"+(bad?" bad":"");clearTimeout(toast.t);toast.t=setTimeout(()=>e.className="",1800)};
+let busy=0,upd="",pf="",pastOpen=false,laterOpen=false;const toast=(m,bad)=>{const e=$("#toast");e.textContent=m;e.className="show"+(bad?" bad":"");clearTimeout(toast.t);toast.t=setTimeout(()=>e.className="",1800)};
 let loading=false;
-function load(man){const b=$("#rf");loading=true;b.classList.add("spin");return api("getData").then(d=>{if(busy)return;D={leaves:[],stores:[],...d};err="";{const n=new Date();upd=pad(n.getHours())+":"+pad(n.getMinutes())}if(GS)ls("kkd",JSON.stringify(d));if(man)toast("已更新 ✓")}).catch(e=>{err=D.projects.length||D.tasks.length?"連線失敗，目前顯示的是上次的資料":"讀取失敗，請按右上角 ↻ 重試";if(man)toast("更新失敗",1)}).finally(()=>{loading=false;b.classList.remove("spin");render()})}
+function load(man){const b=$("#rf");loading=true;b.classList.add("spin");return api("getData").then(d=>{if(busy)return;if(!Array.isArray(d.todos)){err="後台還是舊版：請先更新 Apps Script，執行 migrate，並部署新版本";return}D={leaves:[],stores:[],log:[],mrec:[],...d};err="";{const n=new Date();upd=pad(n.getHours())+":"+pad(n.getMinutes())}if(GS)ls("kkd",JSON.stringify(d));if(man)toast("已更新 ✓")}).catch(e=>{err=D.todos.length?"連線失敗，目前顯示的是上次的資料":"讀取失敗，請按右上角 ↻ 重試";if(man)toast("更新失敗",1)}).finally(()=>{loading=false;b.classList.remove("spin");render()})}
 /* ---- 每月固定規則 ---- */
 function fxDate(r,y,m){const last=new Date(y,m+1,0);let a;r=(r||"").replace(/[（(].*$/,"").trim().replace(/^月底當天$/,"月底");
  if(a=r.match(/^每月(\d+)日$/))return +a[1]<=last.getDate()?new Date(y,m,+a[1]):null;
@@ -85,54 +98,63 @@ function fxDate(r,y,m){const last=new Date(y,m+1,0);let a;r=(r||"").replace(/[�
  return null}
 const hol=k=>{const d=new Date(k+"T00:00:00").getDay();return d===0||d===6||D.leaves.some(l=>l[0]==="全公司"&&l[1]<=k&&(l[2]||l[1])>=k)};
 function adj(d,m){if(m!=="順延"&&m!=="提前")return d;let x=new Date(d),i=0;while(hol(key(x))&&i++<20)x=addD(x,m==="順延"?1:-1);return x}
-const lvOn=p=>p[4]!=="已完成"&&p[3]&&D.leaves.some(l=>l[0]===p[2]&&l[1]<=p[3]&&(l[2]||l[1])>=p[3]);
+const lvOn=T=>!isRec(T)&&T[6]!=="已完成"&&T[3]&&D.leaves.some(l=>l[0]===T[1]&&l[1]<=T[3]&&(l[2]||l[1])>=T[3]);
 /* ---- 行事曆項目：活動、專案截止日、每月固定 ---- */
+const mrecOf=(ym,tt)=>D.mrec.find(r=>r[0].slice(0,7)===ym&&r[1]===tt);
+function fixedOcc(y,m){const ym=y+"-"+pad(m+1),L=[];D.fixed.forEach(f=>{let d=fxDate(f[0],y,m);if(!d)return;d=adj(d,f[3]);const r=mrecOf(ym,f[1]),base=key(d),date=r&&r[2]?r[2]:base;L.push({ym,t:f[1],o:f[2],base,date,mv:date!==base,done:!!r&&r[3]==="完成",mk:ym+"|"+f[1]})});return L}
+const fixedNear=(y,m)=>[-1,0,1].flatMap(o=>{const d=new Date(y,m+o,1);return fixedOcc(d.getFullYear(),d.getMonth())});
+function setM(mk,patch){const ym=mk.slice(0,7),tt=mk.slice(8);let r=mrecOf(ym,tt);if(!r){r=[ym,tt,"",""];D.mrec.push(r)}if("date"in patch)r[2]=patch.date;if("done"in patch)r[3]=patch.done?"完成":"";if(patch.done)sess.add("M|"+mk);render();save("setMonthly",ym,tt,r[2],r[3]==="完成")}
+const tickM=mk=>{const r=mrecOf(mk.slice(0,7),mk.slice(8));setM(mk,{done:!(r&&r[3]==="完成")})};
+function itemF(o,cd){return `<div class="row ${o.done?"ok":""}" data-mk="${esc(o.mk)}"><span class="box">${o.done?"✓":""}</span><span class="tx">${esc(o.t)}${o.mv?`<button class="tag g" data-rs="${esc(o.mk)}">已改日期 ↺</button>`:""}<small class="rm">每月固定</small></span><span class="pill">${esc(o.o||"大家")}</span>${cd||""}<label class="dpl">改日期<input type="date" data-dp="${esc(o.mk)}" value="${o.date}"></label></div>`}
 function items(y,m){const L=[];
- D.fixed.forEach(f=>{let d=fxDate(f[0],y,m);if(d){d=adj(d,f[3]);L.push({d:key(d),e:key(d),k:2,t:f[1],o:f[2]})}});
- D.leaves.forEach(l=>{if(l[1])L.push({d:l[1],e:l[2]&&l[2]>l[1]?l[2]:l[1],k:3,t:"🌴 "+(l[0]==="全公司"?"全公司休息":l[0]+" 休假")+(l[3]?"（"+l[3]+"）":""),o:l[0]})});
- D.events.forEach(e=>{if(!e[0])return;L.push({d:e[0],e:e[1]>e[0]?e[1]:e[0],k:KI(e[2]),t:(e[6]&&KI(e[2])===1?e[6]+"：":"")+e[3],o:e[4],done:/完成/.test(e[5])})});
- D.projects.forEach(p=>{if(p[3])L.push({d:p[3],e:p[3],k:4,t:p[0]+"｜"+p[1],o:p[2],done:p[4]==="已完成"})});
+ fixedNear(y,m).forEach(o=>L.push({d:o.date,e:o.date,k:2,src:"每月固定",t:o.t,o:o.o,done:o.done,mk:o.mk,oc:o}));
+ D.leaves.forEach(l=>{if(l[1])L.push({d:l[1],e:l[2]&&l[2]>l[1]?l[2]:l[1],k:3,src:"休假",t:"🌴 "+(l[0]==="全公司"?"全公司休息":l[0]+" 休假")+(l[3]?"（"+l[3]+"）":""),o:l[0]})});
+ D.events.forEach(e=>{if(!e[0])return;L.push({d:e[0],e:e[1]>e[0]?e[1]:e[0],k:KI(e[2]),src:"活動行事曆",t:e[3],o:e[4],done:/完成/.test(e[5])})});
+ D.todos.forEach((x,ix)=>{if(isRec(x))return;const due=x[3]||"",st=x[7]||"",e=due||st;if(!e)return;const d=st&&st<e?st:e;L.push({d,e,k:4,src:"待辦",t:(x[4]?x[4]+"｜":"")+x[0],o:x[1],done:x[6]==="已完成",ti:ix,per:d<e})});
  return L}
 const dn=s=>Math.round((new Date(s+"T00:00:00")-t0)/864e5),mdw=s=>{const d=new Date(s+"T00:00:00");return(d.getMonth()+1)+"/"+d.getDate()+"（"+WD[d.getDay()]+"）"};
 const cdn=n=>n<0?["已過",""]:n===0?["今天","u"]:n===1?["明天","u"]:n<=3?["剩 "+n+" 天","u"]:n<=7?["剩 "+n+" 天","m"]:["剩 "+n+" 天",""];
 const mine=o=>who==="全部"||ALL.includes(o)||o===who;
-const owners=()=>[...new Set([...D.tasks.map(t=>t[2]),...D.projects.map(p=>p[2]),...D.events.map(e=>e[4])].filter(o=>o&&!ALL.includes(o)))];
+const owners=()=>[...new Set([...D.todos.map(t=>t[1]),...D.events.map(e=>e[4])].filter(o=>o&&!ALL.includes(o)))];
 /* ---- 今天 ---- */
 const chipsHtml=()=>`<div class="chips"><span class="nx" style="margin:0;align-self:center">我是：</span>${["全部",...owners()].map(f=>`<button data-f="${esc(f)}" class="${f===who?"on":""}">${esc(f)}</button>`).join("")}</div>`;
+const isRec=T=>/^(每日|每週|週[一二三四五六日])$/.test(T[2]),tkey=T=>T[2]+"|"+T[0],sess=new Set();
+const isDone=(i,dk)=>{const T=D.todos[i];if(!isRec(T))return T[6]==="已完成";const k=tkey(T);return T[2]==="每週"||!dk||dk===key(t0)?D.checks.includes(k):D.log.includes(dk+"|"+k)};
+function item(i,dk,cd){const T=D.todos[i],rec=isRec(T),done=isDone(i,dk),td=key(t0),can=!rec||!dk||dk===td,late=!rec&&!done&&T[3]&&T[3]<td,sub=[T[4],T[5]].filter(Boolean).join("・");
+ return `<div class="row ${done?"ok":""}" ${can?`data-tk="${i}"`:'style="opacity:.55;cursor:default"'}><span class="box">${done?"✓":""}</span><span class="tx">${esc(T[0])}${T[6]==="卡關"?'<span class="tag">卡關</span>':""}${late?'<span class="tag">逾期</span>':""}${lvOn(T)?'<span class="tag g">負責人休假</span>':""}${sub?`<small class="rm">${esc(sub)}</small>`:""}</span><span class="pill">${esc(T[1]||"大家")}</span>${cd||""}</div>`}
+/* ---- 今天 ---- */
 function viewToday(){
- const wk="週"+WD[t0.getDay()],list=D.tasks.filter(t=>(t[0]==="每日"||t[0]===wk)&&mine(t[2])),wl=D.tasks.filter(t=>t[0]==="每週"&&mine(t[2])),wn=wl.filter(t=>D.checks.includes(t[0]+"|"+t[1])).length,ck=t=>D.checks.includes(t[0]+"|"+t[1]);
- const n=list.filter(ck).length,p=list.length?Math.round(n/list.length*100):0;
- const row=t=>`<div class="row ${ck(t)?"ok":""}" data-id="${esc(t[0]+"|"+t[1])}"><span class="box">${ck(t)?"✓":""}</span><span class="tx">${esc(t[1])}${t[3]?`<small class="rm">${esc(t[3])}</small>`:""}</span><span class="pill">${esc(t[2]||"大家")}</span></div>`;
- const dd=list.filter(t=>t[0]==="每日"),ww=list.filter(t=>t[0]!=="每日");
- const td=key(t0),lvN=[...new Set(D.leaves.filter(l=>l[1]<=td&&(l[2]||l[1])>=td).map(l=>l[0]==="全公司"?"全公司休息":l[0]))],lvS=D.leaves.filter(l=>l[1]>td&&dn(l[1])<=7).sort((a,b)=>a[1]<b[1]?-1:1).slice(0,3);
- const lim=key(addD(t0,3)),T=D.projects.filter(p=>mine(p[2])&&p[3]&&p[3]<=lim&&(p[4]!=="已完成"||sess.has(p[0]+"|"+p[1]))).sort((a,b)=>a[3]<b[3]?-1:1),tn=T.filter(p=>p[4]!=="已完成").length;
- const todo=`<h3 style="margin-top:6px">今天要處理・${tn}</h3>`+(T.length?T.map(p=>{const n=dn(p[3]),d=p[4]==="已完成";return `<div class="row ${d?"ok":""}" data-ps="${esc(p[0])}" data-s="${esc(p[1])}"><span class="box">${d?"✓":""}</span><span class="tx">${esc(p[1])}${p[4]==="卡關"?'<span class="tag">卡關</span>':""}${lvOn(p)?'<span class="tag g">負責人休假</span>':""}<small class="rm">${esc(p[0])}</small></span><span class="pill">${esc(p[2]||"大家")}</span><span class="cd ${d?"":n<=1?"u":"m"}">${d?"✓":n<0?"逾期 "+(-n)+" 天":n===0?"今天":n===1?"明天":"剩 "+n+" 天"}</span></div>`}).join(""):'<div class="note">沒有要處理的專案步驟 🎉</div>');
- return `${todo}
- ${lvN.length||lvS.length?`<div class="card" style="font-size:14px">${lvN.length?"🌴 今天休假："+esc(lvN.join("、")):""}${lvS.map(l=>`<div class="fs">🌴 ${esc(l[0])} ${mdw(l[1])}${l[2]&&l[2]>l[1]?" 到 "+mdw(l[2]):""}</div>`).join("")}</div>`:""}
- <div class="prog"><b>${p}%</b><div class="bar"><i style="width:${p}%"></i></div><span>今日 ${n}/${list.length}</span></div>
- ${p===100&&list.length?'<div class="note" style="margin:0 0 8px">全部完成 ✓</div>':""}
- <h3>每日必做</h3>${dd.map(row).join("")||'<div class="note">沒有事項</div>'}${ww.length?`<h3>${wk}專屬</h3>${ww.map(row).join("")}`:""}
- ${wl.length?`<h3>本週要完成・週一 0 點歸零　${wn}/${wl.length}</h3>${wl.map(row).join("")}`:""}`}
+ const td=key(t0),wk="週"+WD[t0.getDay()],T=i=>D.todos[i],ids=D.todos.map((_,i)=>i).filter(i=>mine(T(i)[1])),lim=key(addD(t0,3));
+ const near=ids.filter(i=>!isRec(T(i))&&T(i)[3]&&T(i)[3]<=lim&&(T(i)[6]!=="已完成"||sess.has(T(i)[4]+"|"+T(i)[0]))).sort((a,b)=>T(a)[3]<T(b)[3]?-1:1),dly=ids.filter(i=>T(i)[2]==="每日"),spec=ids.filter(i=>T(i)[2]===wk),wkl=ids.filter(i=>T(i)[2]==="每週");
+ const lvN=[...new Set(D.leaves.filter(l=>l[1]<=td&&(l[2]||l[1])>=td).map(l=>l[0]==="全公司"?"全公司休息":l[0]))],lvS=D.leaves.filter(l=>l[1]>td&&dn(l[1])<=7).sort((a,b)=>a[1]<b[1]?-1:1).slice(0,3);
+ const all=[...near,...dly,...spec],n=all.filter(i=>isDone(i)).length,p=all.length?Math.round(n/all.length*100):0;
+ const y0=t0.getFullYear(),m0=t0.getMonth(),nm=new Date(y0,m0+1,1),fo=[...fixedOcc(y0,m0),...fixedOcc(nm.getFullYear(),nm.getMonth())].filter(o=>mine(o.o)&&o.date<=lim&&(!o.done||sess.has("M|"+o.mk)));
+ const cdX=(d,done)=>{const x=dn(d);return `<span class="cd ${done?"":x<=1?"u":"m"}">${done?"✓":x<0?"逾期 "+(-x)+" 天":x===0?"今天":x===1?"明天":"剩 "+x+" 天"}</span>`};
+ const cdH=i=>{const d=isDone(i),x=dn(T(i)[3]);return `<span class="cd ${d?"":x<=1?"u":"m"}">${d?"✓":x<0?"逾期 "+(-x)+" 天":x===0?"今天":x===1?"明天":"剩 "+x+" 天"}</span>`};
+ const nrows=[...near.map(i=>({d:T(i)[3],h:item(i,"",cdH(i)),u:!isDone(i)})),...fo.map(o=>({d:o.date,h:itemF(o,cdX(o.date,o.done)),u:!o.done}))].sort((a,b)=>a.d<b.d?-1:1),tn=nrows.filter(r=>r.u).length;
+ return `<h3 style="margin-top:6px">今天要處理・${tn}</h3>${nrows.map(r=>r.h).join("")||'<div class="note">沒有要處理的事 🎉</div>'}
+ ${lvN.length||lvS.length?`<div class="card" style="font-size:14px;margin-top:12px">${lvN.length?"🌴 今天休假："+esc(lvN.join("、")):""}${lvS.map(l=>`<div class="fs">🌴 ${esc(l[0])} ${mdw(l[1])}${l[2]&&l[2]>l[1]?" 到 "+mdw(l[2]):""}</div>`).join("")}</div>`:""}
+ <div class="prog" style="margin-top:14px"><b>${p}%</b><div class="bar"><i style="width:${p}%"></i></div><span>今日 ${n}/${all.length}</span></div>
+ <h3>每日必做</h3>${dly.map(i=>item(i)).join("")||'<div class="note">沒有事項</div>'}${spec.length?`<h3>${wk}專屬</h3>${spec.map(i=>item(i)).join("")}`:""}${wkl.length?`<h3>本週要完成・週一 0 點歸零　${wkl.filter(i=>isDone(i)).length}/${wkl.length}</h3>${wkl.map(i=>item(i)).join("")}`:""}`}
 async function save(fn,...a){busy++;let ok=1;try{await api(fn,...a)}catch(e){ok=0}busy--;if(ok){toast(GS?"已儲存 ✓":"預覽模式：不會存到 Sheet");if(!busy)render()}else{toast("沒存到，已重新載入",1);load()}}
-function toggle(k){const i=D.checks.indexOf(k),on=i<0;on?D.checks.push(k):D.checks.splice(i,1);render();save("toggleCheck",k,on)}
-/* ---- 專案 ---- */
-let finOpen=false;const sess=new Set();
-function viewProj(){
- const td=key(t0),late=p=>p[4]!=="已完成"&&p[3]&&p[3]<td,P=D.projects.filter(p=>mine(p[2])),g={},md=s=>s.slice(5).replace("-","/"),bd=(a,b)=>(a[3]||"9999")<(b[3]||"9999")?-1:1;
- P.forEach(p=>(g[p[0]]=g[p[0]]||[]).push(p));
- const mon=addD(t0,-((t0.getDay()+6)%7)),wk0=key(mon),wk1=key(addD(mon,6));
- const info=Object.keys(g).map(n=>{const L=g[n],k=L.filter(p=>p[4]==="已完成").length,dd=k===L.length,nx=L.filter(p=>p[4]!=="已完成"&&p[3]).sort(bd)[0],stuck=L.some(p=>p[4]==="卡關"||late(p)),tp=L.filter(p=>p[6]&&p[3]),s=tp.length?tp.map(p=>p[6]).sort()[0]:"",e=tp.length?tp.map(p=>p[3]).sort().pop():"",vis=L.filter(p=>p[4]==="卡關"||(p[3]&&p[3]<=wk1&&(p[3]>=wk0||p[4]!=="已完成"))).sort(bd);
-  let beh=!dd&&stuck,el=null;
-  if(s&&e&&e>s){const s0=new Date(s+"T00:00:00");el=Math.min(1,Math.max(0,(t0-s0)/(new Date(e+"T00:00:00")-s0)));if(!dd&&el-k/L.length>=.2)beh=true}
-  return{n,L,k,dd,nx,stuck,s,e,el,beh,vis}});
- const card=c=>{const{n,L,k,dd,nx,s,e,el,beh,vis}=c,ow=[...new Set(L.map(p=>p[2]).filter(Boolean))],o=dd||open[n],rows=o?[...L].sort(bd):vis,rest=L.length-vis.length,dp=Math.round(k/L.length*100),none=!dd&&!vis.some(p=>p[4]!=="已完成");
-  const bar=el!==null?`<div class="tl"><span>${md(s)}</span><div class="tb"><i style="width:${dp}%"></i><u style="left:${Math.round(el*100)}%"></u></div><span>${md(e)}</span></div>`:`<div class="tl"><div class="tb"><i style="width:${dp}%"></i></div></div>`;
-  const nl=none?"　本週沒事"+(nx?"・下一步："+esc(nx[1])+"・"+mdw(nx[3]):""):"";
-  return `<div class="card ${dd?"fin":""}"><div class="ph"><b>${esc(n)}</b><span>${k}/${L.length}</span></div>${bar}<div class="nx ${beh?"lt":""}">${beh?"⚠ 落後・":""}👤 ${esc(ow.join("・")||"大家")}${nl}</div>
-  ${rows.map(p=>`<div class="ps ${p[4]==="已完成"?"ok":""}" data-ps="${esc(p[0])}" data-s="${esc(p[1])}"><span class="box">${p[4]==="已完成"?"✓":""}</span><span class="tx">${esc(p[1])}${p[4]==="卡關"?'<span class="tag">卡關</span>':""}${late(p)?'<span class="tag">逾期</span>':""}${lvOn(p)?'<span class="tag g">負責人休假</span>':""}${/^https?:/.test(p[5])?` <a href="${esc(p[5])}" target="_blank" rel="noopener">🔗</a>`:""}${p[7]?`<small class="rm">${esc(p[7])}</small>`:""}</span>${ow.length>1?`<span class="pill">${esc(p[2]||"大家")}</span>`:""}<span class="du ${late(p)?"lt":""}">${p[3]?md(p[3]):""}</span></div>`).join("")}${!dd&&rest>0?`<div class="ps" data-o="${esc(n)}" style="color:var(--mu);font-size:13px;justify-content:center">${o?"收起 ▲":"其他 "+rest+" 個步驟 ▼"}</div>`:""}</div>`};
- const act=info.filter(c=>!c.dd).sort((a,b)=>(b.stuck||b.beh)-(a.stuck||a.beh)),fin=info.filter(c=>c.dd);
- return `${act.map(card).join("")||'<div class="note">目前沒有進行中的專案 🎉</div>'}${fin.length?`<div class="note" data-fo="1" style="cursor:pointer">已完成 ${fin.length} 個專案 ${finOpen?"▲":"▼"}</div>${finOpen?fin.map(card).join(""):""}`:""}<div class="note">每張卡片只列「本週要做」和「逾期」的步驟，點圓圈打勾＝完成。橫條：深色＝完成進度，圓點＝今天</div>`}
-function tp(pn,st){const p=D.projects.find(x=>x[0]===pn&&x[1]===st);if(!p)return;p[4]=p[4]==="已完成"?"未開始":"已完成";if(p[4]==="已完成")sess.add(p[0]+"|"+p[1]);render();save("setStatus",pn,st,p[4])}
+function toggle(k){const i=D.checks.indexOf(k),on=i<0,lk=key(t0)+"|"+k;on?D.checks.push(k):D.checks.splice(i,1);const j=D.log.indexOf(lk);if(on&&j<0)D.log.push(lk);if(!on&&j>=0)D.log.splice(j,1);render();save("toggleCheck",k,on)}
+function tick(i){const T=D.todos[i];if(isRec(T)){toggle(tkey(T));return}T[6]=T[6]==="已完成"?"":"已完成";if(T[6])sess.add(T[4]+"|"+T[0]);render();save("setTodo",T[0],T[4],T[6])}
+/* ---- 本週 ---- */
+let ww=null,poOpen=false;
+function viewWeek(){
+ const mon=addD(t0,-((t0.getDay()+6)%7));if(!ww)ww=mon;
+ const w0=key(ww),cur=w0===key(mon),td=key(t0),T=i=>D.todos[i],ids=D.todos.map((_,i)=>i).filter(i=>mine(T(i)[1]));
+ let tot=0,dn2=0;const cnt=l=>{tot+=l.length;dn2+=l.filter(i=>isDone(i,td)).length};
+ const wkl=cur?ids.filter(i=>T(i)[2]==="每週"):[];cnt(wkl);const occW=fixedNear(ww.getFullYear(),ww.getMonth()).filter(o=>mine(o.o));
+ const days=[...Array(7)].map((_,j)=>{const d=addD(ww,j),dk=key(d),l=ids.filter(i=>isRec(T(i))?T(i)[2]==="週"+WD[d.getDay()]:T(i)[3]===dk).sort((a,b)=>(T(a)[1]||"")<(T(b)[1]||"")?-1:1);
+  const fx=occW.filter(o=>o.date===dk),n=l.length+fx.length,dd=l.filter(i=>isDone(i,dk)).length+fx.filter(o=>o.done).length;tot+=n;dn2+=dd;
+  return `<h3 style="${dk===td?"color:var(--ac);font-weight:700":""}">週${WD[d.getDay()]} ${lab(dk)}${dk===td?"・今天":""}${n?"　"+dd+"/"+n:""}</h3>${l.map(i=>item(i,dk)).join("")+fx.map(o=>itemF(o)).join("")||'<div class="note" style="text-align:left;margin:0 4px">沒有安排</div>'}`});
+ const p=tot?Math.round(dn2/tot*100):0,mon0=key(mon);
+ return `<div class="pg"><button class="circ" data-wm="-7">‹</button><span>${lab(w0)} – ${lab(key(addD(ww,6)))}${cur?"":'<button class="tdy" data-wt="1">本週</button>'}</span><button class="circ" data-wm="7">›</button></div>
+ <div class="wk"><div class="wl card"><div class="prog"><b>${p}%</b><div class="bar"><i style="width:${p}%"></i></div><span>本週 ${dn2}/${tot}</span></div>
+ ${wkl.length?`<h3 style="margin-top:6px">每週要完成・${wkl.filter(i=>isDone(i)).length}/${wkl.length}</h3>${wkl.map(i=>item(i)).join("")}`:""}
+ <div class="note" style="text-align:left">每日必做不列在這裡，請到「今天」頁勾選。過去或未來那天的固定事項只能看，不能勾</div></div>
+ <div class="wc">${days.slice(0,3).join("")}</div><div class="wc">${days.slice(3).join("")}</div></div>`}
 /* ---- 門市 ---- */
 let sw=null;
 const dd_=(a,b)=>Math.round((new Date(a+"T00:00:00")-new Date(b+"T00:00:00"))/864e5),lab=s=>{const d=new Date(s+"T00:00:00");return(d.getMonth()+1)+"/"+d.getDate()};
@@ -149,32 +171,54 @@ function viewStore(){
  <div class="sd">${hdr}</div>${rows||'<div class="note">這兩週沒有門市活動</div>'}${rows&&idle.length?`<div class="note">這兩週沒有活動：${esc(idle.join("、"))}</div>`:""}
  <h3>進行中・即將開始</h3>${list.map(fr).join("")||'<div class="note">目前沒有門市活動</div>'}`}
 /* ---- 月曆 ---- */
-function fr(x){const s=dn(x.d),c=s>0&&x.e>x.d?[s+" 天後開始",""]:cdn(dn(x.e)),d=new Date(x.d+"T00:00:00");
- return `<div class="fr ${x.done?"dn":""}" style="--ck:var(--c${x.k})"><div class="fd"><b>${d.getDate()}</b><span>週${WD[d.getDay()]}</span></div><div class="ft"><div>${esc(x.t)}</div><div class="fs">📅 ${x.e>x.d?mdw(x.d)+" 到 "+mdw(x.e):mdw(x.d)}${x.o?"｜"+esc(x.o):""}</div></div><span class="cd ${x.done?"":c[1]}">${x.done?"✓ 完成":c[0]}</span></div>`}
+function fr(x){const s=dn(x.d),tk=x.ti!==undefined||!!x.mk,od=tk&&!x.done&&dn(x.e)<0,c=od?["逾期 "+(-dn(x.e))+" 天","u"]:s>0&&x.e>x.d?[s+" 天後開始",""]:cdn(dn(x.e)),d=new Date(x.d+"T00:00:00"),at=x.ti!==undefined?`data-tk="${x.ti}"`:x.mk?`data-mk="${esc(x.mk)}"`:"";
+ return `<div class="fr ${x.done?"dn":""}" ${at} style="--ck:var(--c${x.k});${tk?"cursor:pointer":""}">${tk?`<span class="box">${x.done?"✓":""}</span>`:""}<div class="fd"><b>${d.getDate()}</b><span>週${WD[d.getDay()]}</span></div><div class="ft"><div>${esc(x.t)}${x.oc&&x.oc.mv?`<button class="tag g" data-rs="${esc(x.mk)}">已改日期 ↺</button>`:""}</div><div class="fs">${x.src?esc(x.src)+"・":""}📅 ${x.e>x.d?mdw(x.d)+" 到 "+mdw(x.e):mdw(x.d)}${x.o?"｜"+esc(x.o):""}</div></div><span class="cd ${x.done?"":c[1]}">${x.done?"✓ 完成":c[0]}</span>${x.oc?`<label class="dpl">改日期<input type="date" data-dp="${esc(x.mk)}" value="${x.d}"></label>`:""}</div>`}
+const pillT=x=>{if(x.done)return["✓ 完成",""];if(!x.e)return["隨時",""];const n=dn(x.e);if(n<0)return["逾期 "+(-n)+" 天","u"];if(x.per)return[lab(x.d)+"–"+(x.d.slice(0,7)===x.e.slice(0,7)?+x.e.slice(8):lab(x.e)),"b"];return[n===0?"今天":n===1?"明天":lab(x.e),n<=1?"u":n<=3?"m":""]};
+const trH=x=>{const c=pillT(x),at=x.ti!==undefined?`data-tk="${x.ti}"`:`data-mk="${esc(x.mk)}"`;
+ return `<div class="tr ${x.done?"ok":""}" ${at}><span class="box">${x.done?"✓":""}</span><span class="tt">${esc(x.t)}${x.stuck?'<span class="tag">卡關</span>':""}${x.fx?'<span class="tag g">每月固定</span>'+(x.fx.mv?`<button class="tag g" data-rs="${esc(x.mk)}">已改日期 ↺</button>`:""):""}${x.p?`<small>${esc(x.p)}</small>`:""}</span><span class="cd ${c[1]}">${c[0]}</span>${x.fx?`<label class="dpl">改日期<input type="date" data-dp="${esc(x.mk)}" value="${x.fx.date}"></label>`:""}</div>`};
+function panelRows(y,m){
+ const a=key(new Date(y,m,1)),z=key(new Date(y,m+1,0)),cur=a===key(new Date(t0.getFullYear(),t0.getMonth(),1)),L=[];
+ D.todos.forEach((T,ix)=>{if(isRec(T)||!mine(T[1]))return;const due=T[3]||"",st=T[7]||"",e=due||st,done=T[6]==="已完成",d=e?(st&&st<e?st:e):"";
+  if(e){if(d>z)return;if(e<a&&!(cur&&!done))return}else if(!cur)return;
+  L.push({ti:ix,t:T[0],p:T[4]||"",d,e,per:!!e&&d<e,done,stuck:T[6]==="卡關",sk:T[4]+"|"+T[0]})});
+ fixedOcc(y,m).filter(o=>mine(o.o)).forEach(o=>L.push({mk:o.mk,t:o.t,p:"",d:o.date,e:o.date,per:false,done:o.done,fx:o,sk:"M|"+o.mk}));
+ return L}
+function panelH(y,m){
+ const td=key(t0),cur=y===t0.getFullYear()&&m===t0.getMonth(),L=panelRows(y,m).sort((p,q)=>{const a=p.e||"9",b=q.e||"9";return a<b?-1:a>b?1:0}),vis=x=>!x.done||sess.has(x.sk),act=L.filter(vis),fin=L.filter(x=>!vis(x));
+ const g=(c,n,A)=>A.length?`<div class="gh"><i style="background:${c}"></i>${n} <u>${A.length}</u></div>${A.map(trH).join("")}`:"";
+ let h='<div class="th">待辦</div>';
+ if(cur){const od=act.filter(x=>x.e&&x.e<td&&!x.done),rest=act.filter(x=>!od.includes(x)),soon=rest.filter(x=>x.e&&(dn(x.e)<=7||(x.per&&x.d<=td))),later=rest.filter(x=>!soon.includes(x));
+  h+=g("#C4493D","逾期",od)+g("#D9822B","這幾天",soon);
+  if(later.length)h+=`<div class="gh tg2" data-lo="1"><i style="background:#8aa0a4"></i>之後 <u>${later.length} 項 ${laterOpen?"▲":"▼"}</u></div>${laterOpen?later.map(trH).join(""):""}`}
+ else h+=g("#D9822B","本月",act);
+ if(!act.length&&!fin.length)h+='<div class="note">這個月沒有待辦 🎉</div>';
+ if(fin.length)h+=`<div class="note" data-pa="1" style="cursor:pointer">已完成 ${fin.length} 項 ${pastOpen?"▲":"▼"}</div>${pastOpen?fin.map(trH).join(""):""}`;
+ return `<div class="card tp">${h}</div>`}
 function viewCal(){
  const y=cm.getFullYear(),m=cm.getMonth(),L=items(y,m).filter(x=>x.k===3||mine(x.o||"")),by={};
  L.forEach(e=>{for(let d=new Date(e.d+"T00:00:00"),i=0;key(d)<=e.e&&i<60;d=addD(d,1),i++)(by[key(d)]=by[key(d)]||[]).push(e)});
  const st=addD(new Date(y,m,1),-new Date(y,m,1).getDay());let h="";
- for(let i=0;i<42;i++){const d=addD(st,i),k=key(d);if(i>=35&&d.getMonth()!==m)break;
-  h+=`<div class="c ${d.getMonth()!==m?"o":""} ${k===key(t0)?"t":""} ${k===cd?"s":""}" data-c="${k}"><div class="n">${d.getDate()}</div><div class="dots">${[...new Set((by[k]||[]).map(e=>e.k))].map(x=>`<i class="k${x}"></i>`).join("")}</div></div>`}
- const day=(by[cd]||[]).sort((a,b)=>a.k-b.k),a=key(new Date(y,m,1)),z=key(new Date(y,m+1,0)),hl=L.filter(x=>x.k!==2&&x.d<=z&&x.e>=a).sort((a,b)=>a.d<b.d?-1:1);
- const isP=x=>x.done||dn(x.e)<0,act=hl.filter(x=>!isP(x)),past=hl.filter(isP),off=key(new Date(y,m,1))!==key(new Date(t0.getFullYear(),t0.getMonth(),1))||cd!==key(t0);
+ for(let i=0;i<42;i++){const d=addD(st,i),k=key(d);if(i>=35&&d.getMonth()!==m)break;const es=by[k]||[];
+  h+=`<div class="c ${d.getMonth()!==m?"o":""} ${k===key(t0)?"t":""} ${k===cd?"s":""}" data-c="${k}"><div class="n">${d.getDate()}</div><div class="dots">${[...new Set(es.filter(e=>!e.per||k===e.e).map(e=>e.k))].map(x=>`<i class="k${x}"></i>`).join("")}</div>${es.some(e=>e.per)?'<div class="bd"></div>':""}</div>`}
+ const day=(by[cd]||[]).sort((a,b)=>a.k-b.k),off=key(new Date(y,m,1))!==key(new Date(t0.getFullYear(),t0.getMonth(),1))||cd!==key(t0);
  return `<div class="pg"><button class="circ" data-m="-1">‹</button><span>${y} · ${m+1} 月${off?'<button class="tdy" data-tdy="1">今天</button>':""}</span><button class="circ" data-m="1">›</button></div>
- <div class="card" style="padding:8px"><div class="band">${WD.map(x=>`<div>${x}</div>`).join("")}</div><div class="grid">${h}</div></div>
- <div class="leg">${KN.map((n,i)=>`<span><i class="ld k${i}"></i>${n}</span>`).join("")}</div>
- <div class="card"><b style="font-size:13px;color:var(--ac)">${mdw(cd)}</b>${day.length?day.map(e=>`<div class="ev"><i class="ld k${e.k}"></i>${esc(e.t)}</div>`).join(""):'<div class="note" style="margin:6px 0">這天沒有事項</div>'}</div>
- <h3>本月重點・截止日</h3>${act.map(fr).join("")||`<div class="note">${past.length?"本月沒有待辦的重點事項 🎉":"本月沒有重點事項 🎉"}</div>`}${past.length?`<div class="note" data-pa="1" style="cursor:pointer">已過／已完成 ${past.length} 項 ${pastOpen?"▲":"▼"}</div>${pastOpen?past.map(fr).join(""):""}`:""}`}
+ <div class="cal2"><div class="cl"><div class="card" style="padding:8px"><div class="band">${WD.map(x=>`<div>${x}</div>`).join("")}</div><div class="grid">${h}</div></div>
+ <div class="leg">${[[4,"待辦"],[3,"休假"],[0,"活動行事曆"],[2,"每月固定"]].map(([i,n])=>`<span><i class="ld k${i}"></i>${n}</span>`).join("")}<span><i class="lb"></i>期間內哪天做都可以</span></div>
+ <div class="card"><b style="font-size:13px;color:var(--ac)">${mdw(cd)}</b>${day.length?day.map(e=>`<div class="ev"><i class="ld k${e.k}"></i>${esc(e.t)}${e.per?` <span class="fs">${lab(e.d)}–${lab(e.e)}</span>`:""}</div>`).join(""):'<div class="note" style="margin:6px 0">這天沒有事項</div>'}</div></div>${panelH(y,m)}</div>`}
 /* ---- 畫面 ---- */
 function render(){
  $("#sub").textContent=t0.getFullYear()+"/"+(t0.getMonth()+1)+"/"+t0.getDate()+"　週"+WD[t0.getDay()];
+ document.querySelector(".wrap").classList.toggle("w",tab==="cal"||tab==="week");
  document.querySelectorAll("[data-t]").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
- $("#v").innerHTML=(err?`<div class="card alt">${err}</div>`:"")+(tab==="store"?"":chipsHtml())+(tab==="today"?viewToday():tab==="proj"?viewProj():tab==="store"?viewStore():viewCal())+`<div class="note">${GS?(loading?"更新中…":"最後更新 "+upd+"・每分鐘自動更新"):"預覽模式（範例資料）"}</div>`}
-document.addEventListener("click",e=>{const t=e.target.closest("[data-t],[data-f],[data-id],[data-o],[data-ps],[data-fo],[data-sm],[data-str],[data-m],[data-c],[data-pa],[data-tdy],#rf");if(!t)return;const q=t.dataset;
+ $("#v").innerHTML=(err?`<div class="card alt">${err}</div>`:"")+(tab==="store"?"":chipsHtml())+(tab==="today"?viewToday():tab==="week"?viewWeek():tab==="store"?viewStore():viewCal())+`<div class="note">${GS?(loading?"更新中…":"最後更新 "+upd+"・每分鐘自動更新"):"預覽模式（範例資料）"}</div>`}
+document.addEventListener("click",e=>{const t=e.target.closest("[data-t],[data-f],[data-o],[data-tk],[data-mk],[data-dp],[data-rs],[data-po],[data-wm],[data-wt],[data-sm],[data-str],[data-m],[data-c],[data-pa],[data-lo],[data-tdy],#rf");if(!t)return;const q=t.dataset;
  if(t.id==="rf"){load(1);return}
- if(q.t)tab=q.t;else if(q.f){who=q.f;ls("kkw",who)}else if(q.id){toggle(q.id);return}
- else if(q.ps){tp(q.ps,q.s);return}else if(q.o){open[q.o]=!open[q.o]}
- else if(q.m)cm=new Date(cm.getFullYear(),cm.getMonth()+ +q.m,1);else if(q.c)cd=q.c;else if(q.fo)finOpen=!finOpen;else if(q.sm)sw=addD(sw,+q.sm);else if(q.str)sw=null;else if(q.pa)pastOpen=!pastOpen;else if(q.tdy){cm=new Date(t0.getFullYear(),t0.getMonth(),1);cd=key(t0)}
+ if(q.dp)return;if(q.rs){setM(q.rs,{date:""});return}if(q.mk){tickM(q.mk);return}
+ if(q.t)tab=q.t;else if(q.f){who=q.f;ls("kkw",who)}else if(q.tk){tick(+q.tk);return}
+ else if(q.o){open[q.o]=!open[q.o]}
+ else if(q.m)cm=new Date(cm.getFullYear(),cm.getMonth()+ +q.m,1);else if(q.c)cd=q.c;else if(q.po)poOpen=!poOpen;else if(q.wm)ww=addD(ww,+q.wm);else if(q.wt)ww=null;else if(q.sm)sw=addD(sw,+q.sm);else if(q.str)sw=null;else if(q.pa)pastOpen=!pastOpen;else if(q.lo)laterOpen=!laterOpen;else if(q.tdy){cm=new Date(t0.getFullYear(),t0.getMonth(),1);cd=key(t0)}
  render()});
-try{const c=GS&&JSON.parse(ls("kkd")||"null");if(c){if(c.today!==key(t0))c.checks=[];D={leaves:[],stores:[],...c};render()}}catch(e){}
+document.addEventListener("change",e=>{const el=e.target;if(el&&el.dataset&&el.dataset.dp&&el.value)setM(el.dataset.dp,{date:el.value})});
+try{const c=GS&&JSON.parse(ls("kkd")||"null");if(c&&Array.isArray(c.todos)){if(c.today!==key(t0)){c.checks=[];c.log=[]}D={leaves:[],stores:[],log:[],mrec:[],...c};render()}}catch(e){}
 load();setInterval(()=>{if(key(new Date())!==key(t0)){location.reload();return}load()},60000);
 </script></body></html>
